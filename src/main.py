@@ -129,7 +129,30 @@ class Pipe:
         t_point = bird_mask.overlap(top_pipe_mask, top_offset)
         
         return b_point or t_point
+
+class Base:
+    VEL = 5
+    WIDTH = BASE_IMG.get_width()
+    IMG = BASE_IMG
     
+    def __init__(self, y) -> None:
+        self.y = y
+        self.x1 = 0
+        self.x2 = Base.WIDTH
+        
+    def move(self):
+        self.x1 -= Base.VEL
+        self.x2 -= Base.VEL
+        
+        if self.x1 + Base.WIDTH < 0:
+            self.x1 = self.x2 + Base.WIDTH
+            
+        if self.x2 + Base.WIDTH < 0:
+            self.x2 = self.x1 + Base.WIDTH
+            
+    def draw(self, win):
+        win.blit(Base.IMG, (self.x1, self.y))
+        win.blit(Base.IMG, (self.x2, self.y))
     
 def draw_window(win, bird: Bird):
     win.blit(BG_IMG, (0,0))

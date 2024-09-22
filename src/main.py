@@ -12,7 +12,7 @@ from constants import IMG_DIR, WIN_HEIGHT, WIN_WIDTH
 #Loading all icons
 ALL_BIRD_IMGS = ['bird1.png', 'bird2.png', 'bird3.png']
 BIRD_IMGS = [transform.scale2x(image.load(os.path.join(IMG_DIR, img))) for img in ALL_BIRD_IMGS]
-PIP_IMG = transform.scale2x(image.load(os.path.join(IMG_DIR, 'pipe.png')))
+PIPE_IMG = transform.scale2x(image.load(os.path.join(IMG_DIR, 'pipe.png')))
 BASE_IMG = transform.scale2x(image.load(os.path.join(IMG_DIR, 'base.png')))
 BG_IMG = transform.scale2x(image.load(os.path.join(IMG_DIR, 'bg.png')))
 
@@ -88,6 +88,48 @@ class Bird:
         
     def get_mask(self):
         return mask.from_surface(self.img)
+
+class Pipe:
+    GAP = 200
+    VEL = 5
+    
+    def __init__(self, x) -> None:
+        self.x = x
+        self.height = 0
+        
+        self.top = 0
+        self.bottom = 0
+        self.PIPE_TOP = transform.flip(PIPE_IMG, False, True)
+        self.PIPE_BOTTOM = PIPE_IMG
+        
+        self.passed = False
+        self.set_height()
+        
+    def set_height(self):
+        self.height = random.randrange(50,450)
+        self.top = self.height - self.PIPE_TOP.get_height()
+        self.bottom = self.height + self.GAP
+        
+    def move(self):
+        self.x -= self.VEL
+        
+    def draw(self, win):
+        win.blit(self.PIPE_TOP, (self.x, self.top))
+        win.blit(self.PIPE_BOTTOM, (self.x, self.bottom))
+        
+    def collide(self, bird: Bird):
+        bird_mask = bird.get_mask()
+        top_pipe_mask = mask.from_surface(self.PIPE_TOP)
+        bottom_pipe_mask = mask.from_surface(self.PIPE_BOTTOM)
+        
+        top_offset = (self.x - bird.x, self.top - round(bird.y))
+        bottom_offset = (self.x - bird.x, self.bottom - round(bird.y))
+        
+        b_point = bird_mask.overlap(bottom_pipe_mask, bottom_offset)
+        t_point = bird_mask.overlap(top_pipe_mask, top_offset)
+        
+        return b_point or t_point
+    
     
 def draw_window(win, bird: Bird):
     win.blit(BG_IMG, (0,0))
@@ -97,13 +139,15 @@ def draw_window(win, bird: Bird):
 def main():
     bird = Bird(200,200)
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+    clock = pygame.time.Clock()
     
     run = True
     while run:
+        clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        
+        # bird.move()
         draw_window(win, bird)
                 
     pygame.quit()

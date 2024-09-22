@@ -10,5 +10,5 @@ IMG_DIR = path.join(SRC_DIR, 'imgs')
 
 # Pygame window constants
 
-WIN_WIDTH = 600
+WIN_WIDTH = 500
 WIN_HEIGHT = 800

@@ -7,6 +7,7 @@ WORK_DIR = CURR_DIR.parent.resolve()
 
 SRC_DIR = path.join(WORK_DIR, 'src')
 IMG_DIR = path.join(SRC_DIR, 'imgs')
+CONFIG_PATH = path.join(SRC_DIR, 'config-feedforward.txt')
 
 # Pygame window constants
 
